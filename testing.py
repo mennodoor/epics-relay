@@ -12,9 +12,9 @@ test_pvs = [
         'test_i3',
         'test_f3',
         'test_c3',
-        'test_I3',
-        'test_F3',
-        'test_C3',
+        'test_I30',
+        'test_F30',
+        'test_C30',
 ]
 
 time_out = 0.1
@@ -25,7 +25,7 @@ while True:
         dtype = pvname.rsplit('_', 1)[1]
         count = int(dtype[1:])
         if dtype.isupper():
-            values = rand(1)*10
+            values = rand(3)*10
         else:
             values = rand(count)*10
         print(values)

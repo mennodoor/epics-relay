@@ -100,17 +100,25 @@ class RelayDriver(Driver):
             count = pvinfo['count']
             dtype = pvinfo['type']
             buffer = self.getParam(reason)
+            
+            value_len = 1
+            if isinstance(value, list) or isinstance(value, str):
+                value_len = len(value)
+
             if not isinstance(buffer, list) and not isinstance(buffer, str):
                 buffer = [buffer]
-            if len(buffer) == count:
-                buffer = buffer[1:]
+
+            overhead = value_len + len(buffer) - count
+            if overhead > 0:
+                buffer = buffer[overhead:]
             if dtype == 2: # 2 is char
                 buffer += value
             else:
-                buffer.append(value)
+                buffer.extend(value)
             self.setParam(reason, buffer)
             self.updatePV(reason)
-        except:
+        except Exception as e:
+            raise
             logging.error('ERROR: append_buffer raised exception:\n'+str(e))
 
     def write(self, reason: str, value):
@@ -181,9 +189,9 @@ class DynamicServer(SimpleServer):
         }
         
         # configure PV stats
+        dtype = basename.rsplit("_", 1)[1]
         count = int(dtype[1:])
         info['count'] = count
-        dtype = basename.rsplit("_", 1)[1]
         if dtype[0].lower() == "f":
             info['type'] = 'float'
         elif dtype[0].lower() == "i":
