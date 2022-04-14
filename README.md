@@ -31,7 +31,7 @@ epics.put("5trap:relay:pressure_log_F100", 1e-4) # this is a buffer of length 10
 epics.put("5trap:relay:cmdline_output_c10000", "The sun is shining, dont you want to go outside?")
 ```
 
-The prefix is the server identifier, the name is an arbitray name for you to choose to describe the variable. dtype defines the value type (**f**loat, **i**nt, **c**har, **C**apital letters for a buffer) and count gives the number of elements in this PVs array.
+The prefix is the server identifier, the name is an arbitray name for you to choose to describe the variable. dtype defines the value type (**f**loat, **i**nt, **c**har, **U**pper case letters for a buffer) and count gives the number of elements in this PVs array.
 
 ## Authors
 
