@@ -6,11 +6,11 @@ This is an EPICS relay server using pcaspy. You can send data to a made up varia
 
 ## Why?
 
-I build this to have a **super fast** solution for some specific cases of laziness:
+I build this to have a **super fast** solution for some specific cases:
 
 1. You have a script running doing *something* repeatedly and just need the result value as an epics variable to process or archive or something.
 2. You want to "publish" a single monitoring value from some sensor and building a server for it would be overkill.
-3. Server / threading issues make building a server really annoying sometimes.
+3. Threading issues make building a server annoying sometimes.
 
 Having this server running on some computer in your network allows you to just think of a name for your variable, use pyepics to send the value to the relay server even though it did not exist before and you can use the value in other epics-enabled software *immediately*.
 
