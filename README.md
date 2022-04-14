@@ -35,7 +35,7 @@ The prefix is the server identifier, the name is an arbitray name for you to cho
 
 ## Authors
 
-* **Menno Door** - *Initial work* - [door at mpi-hd.mpg.de](mailto:door@mpi-hd.mpg.de)
+* **Menno Door** - *Initial work* - [door at mpi-k.de](mailto:door@mpi-k.de)
 
 ## License
 
