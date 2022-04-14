@@ -14,7 +14,7 @@ I build this to have a **super fast** solution for some specific cases of lazine
 
 Having this server running on some computer in your network allows you to just think of a name for your variable, use pyepics to send the value to the relay server even though it did not exist before and you can use the value in other epics-enabled software *immediately*.
 
-## How:
+## How to use:
 
 The epics server starts with an empty pv list. New pvs can be created during run-time by putting a value to the server using the correct syntax:
 
