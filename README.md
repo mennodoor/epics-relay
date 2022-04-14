@@ -1,14 +1,18 @@
 # EPICSRelay
 
+## What is it?
+
+This is an EPICS relay server using pcaspy. You can send data to a made up variable name fitting the naming rules (prefix & dtype-suffix) and an EPICS-PV will then created on the fly for other clients to read from.
+
 ## Why?
 
-I build this to have a **super fast** solution for the following cases:
+I build this to have a **super fast** solution for some specific cases of laziness:
 
-1. I have a script running doing *something* repeatedly and I need just the result value as an epics variable to process or archive in another service.
-2. I have a single monitoring value from some sensor and I am to lazy to build a server for that.
-3. The needed server for a service or device only needs read-only values and still for what reason so ever I would need a bunch of complicated threading stuff and thread locking which I want to avoid.
+1. You have a script running doing *something* repeatedly and just need the result value as an epics variable to process or archive or something.
+2. You want to "publish" a single monitoring value from some sensor and building a server for it would be overkill.
+3. Server / threading issues make building a server really annoying sometimes.
 
-Having this server running on some computer in your network allows you to just think of a clever name for your variable, use pyepics to send the value to the relay server using that clever name even though it did not exist before and you can use the value in other epics-enabled software *immediately*.
+Having this server running on some computer in your network allows you to just think of a name for your variable, use pyepics to send the value to the relay server even though it did not exist before and you can use the value in other epics-enabled software *immediately*.
 
 ## How:
 
@@ -23,10 +27,11 @@ e.g.
 epics.put("5trap:relay:cupsofcoffeetoday_i1", 2)
 epics.put("5trap:relay:temperature_lab_f1", 21.2)
 epics.put("5trap:relay:fit_results_f4", [23.0, 0.1, 3231.123, 1e-4])
+epics.put("5trap:relay:pressure_log_F100", 1e-4) # this is a buffer of length 100. Values put, will be appended right.
 epics.put("5trap:relay:cmdline_output_c10000", "The sun is shining, dont you want to go outside?")
 ```
 
-The prefix is the server identifier, the name is an arbitray name for you to choose to describe the variable. dtype defines the value type (**f**loat, **i**nt, **c**har) and count gives the number of elements in this PVs array.
+The prefix is the server identifier, the name is an arbitray name for you to choose to describe the variable. dtype defines the value type (**f**loat, **i**nt, **c**har, **C**apital letters for a buffer) and count gives the number of elements in this PVs array.
 
 ## Authors
 
