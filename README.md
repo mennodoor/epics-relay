@@ -2,7 +2,7 @@
 
 ## What is it?
 
-This is an EPICS relay server using pcaspy. You can send data to a made up variable name fitting the naming rules (prefix & dtype-suffix) and an EPICS-PV will then be created on the fly for other clients to read from.
+This is an EPICS relay server using [pcaspy](https://github.com/paulscherrerinstitute/pcaspy). You can send data to a made up variable name fitting the naming rules (prefix & dtype-suffix) and an EPICS-PV will then be created on the fly for other clients to read from.
 
 ## Why?
 
