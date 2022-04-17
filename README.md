@@ -1,16 +1,14 @@
-# EPICSRelay
+# EPICS Relay
 
-## What is it?
+## About
 
-This is an [EPICS](https://epics-controls.org/) relay server written in python using the [pcaspy](https://github.com/paulscherrerinstitute/pcaspy) library. You can send data using an EPICS client, e.g. [pyepics](https://github.com/pyepics/pyepics), to a not yet existing process variable (PV) which fits the naming rules (prefix & dtype-suffix). A PV will then be created on the fly for other clients to read from.
+This is an [EPICS](https://epics-controls.org/) relay server written in python using the [pcaspy](https://github.com/paulscherrerinstitute/pcaspy) library. You can send data using an EPICS client, e.g. [pyepics](https://github.com/pyepics/pyepics), to a not yet existing process variable (PV) which fits the naming rules (prefix & dtype-suffix). A PV will then be created on the fly for other clients to read from. These PVs do not look any different than standard pcaspy PVs, so things like camonitor will work as normal, but the PV has to exist prior to a camonitor initialization.
+
+There is no implementation for setting limits, units or other *higher order* PV-attributes ...yet. Only type (int, float, char) and count. And, because I needed it, a right appending buffer.
 
 ## Why?
 
-EPICS based control systems don't use relays or brokers, its a network of servers presenting interfaces to devices or services and the underlying EPICS protocols allow clients to autoconnect to servers based on a process variable naming scheme and network broadcasts to find each other. So why would you need a relay? It's just a really easy way to publish variables from non-server scripts as PVs without building a server around them. That can be some online-analysis scripts, monitoring values from sensors or STDERR outputs from anywhere. Basically every device that doesn't need any input (doesn't need to be written to) can instead of building a server also use the relay. 
-
-Having this server running on some computer in your network allows you to just think of a name for your variable, add prefix and suffix to it, send the value to the relay server even though it did not exist before and you can use the value in other epics-enabled software *immediately*. These PVs do not look any different than standard pcaspy PVs, so things like camonitor will work as normal. 
-
-There is no implementation for setting limits, units or other *higher order* PV-attributes ...yet. Only type (int, float, char) and count. And, because I needed it, a right appending buffer.
+EPICS based control systems don't use relays or brokers, its a network of servers presenting interfaces to devices or services and the underlying EPICS protocols allow clients to autoconnect to servers based on a process variable naming scheme and network broadcasts to find each other. So why would you need a relay? It's just a really easy way to publish variables from non-server scripts as PVs without building a server around them. That can be results of some online-analysis scripts, monitoring values from sensors or STDERR outputs from anywhere. Basically every device that doesn't need any input (doesn't need to be written to) can instead of building a server also use the relay. 
 
 ## How to use:
 
@@ -30,6 +28,11 @@ epics.put("5trap:relay:cmdline_output_c10000", "The sun is shining, go outside!"
 ```
 
 The prefix is the server identifier, the name is an arbitray name for you to choose to describe the variable. dtype defines the value type (**f**loat, **i**nt, **c**har, **U**pper case letters for a buffer) and count gives the number of elements in this PVs array.
+
+## ToDo
+
+1. Add some method to adjust units, alarm limits and other PV attributes.
+2. Autosave current PV names (and values?) to recreate the PVs on server restart. That would help with camonitoring startups after system failures.
 
 ## Authors
 
