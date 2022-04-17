@@ -31,8 +31,9 @@ The prefix is the server identifier, the name is an arbitray name for you to cho
 
 ## ToDo
 
-1. Add some method to adjust units, alarm limits and other PV attributes.
-2. Autosave current PV names (and values?) to recreate the PVs on server restart. That would help with camonitoring startups after system failures.
+1. Change the way the server class accesses the driver. Its using the global variable defined in if name==main and thats just not pretty.
+2. Add some method to adjust units, alarm limits and other PV attributes.
+3. Autosave current PV names (and values?) to recreate the PVs on server restart. That would help with camonitoring startups after system failures.
 
 ## Authors
 

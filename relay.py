@@ -24,7 +24,7 @@ prefix = 'RELAY:'
 # f : float
 # i : int
 # c : char
-# X (capital letter of prior dtypes) : a right appending buffer
+# X (upper case letter of prior dtypes) : a right appending buffer
 ##################################################################
 
 
@@ -45,7 +45,7 @@ class RelayDriver(Driver):
     #global dynamic_pvdb
 
     def __init__(self):
-        Driver.__init__(self)
+        super().__init__()
         logging.debug('Driver init complete.')
 
     def delPV(self, reason: str):
@@ -68,7 +68,7 @@ class RelayDriver(Driver):
                 driver.manager.pvs[self.port].pop(reason)
                 pv = driver.manager.pvf.pop(prefix + reason)
                 del pv
-                self.updatepvlist()
+                self.update_pvlist()
                 return True
             else:
                 return False
@@ -80,6 +80,9 @@ class RelayDriver(Driver):
         '''
         Reads the dynamic_pvdb database and creates a string listing all pv names and updates the pv 'pvlist' with
         that created list.
+        
+        :return: None
+        :rtype: None
         '''
         try:
             pvlist = ""
@@ -89,11 +92,19 @@ class RelayDriver(Driver):
             self.updatePV('pvlist')
         except Exception as e:
             logging.error('ERROR: update_pvlist raised exception:\n'+str(e))
+        
         return
 
-    def append_buffer(self, reason, value):
+    def append_buffer(self, reason: str, value):
         '''
         Appending a buffer pv with new value and losing the most left if neccessarry.
+        
+        :param reason: Name of the PV
+        :type reason: str
+        :param value: new value (int, float, char or list of any of these)
+        :type value: obj
+        :return: None
+        :rtype: None
         '''
         try:
             pvinfo = self.getParamInfo(reason)
@@ -118,12 +129,20 @@ class RelayDriver(Driver):
             self.setParam(reason, buffer)
             self.updatePV(reason)
         except Exception as e:
-            raise
             logging.error('ERROR: append_buffer raised exception:\n'+str(e))
+        
+        return 
 
     def write(self, reason: str, value):
         '''
         Just for reacting on the delpv case. Otherwise it would not be neccessary.
+        
+        :param reason: Name of the PV 
+        :type reason: str
+        :param value: new value (int, float, char or list of any of these)
+        :type value: obj
+        :return: 'success' bool, either False or 1 or the successfully written value.
+        :rtype: bool
         '''
         logging.debug('write:\t' + reason +'\t'+ str(value) +'\t'+ str(type(value)) )
         status = True
@@ -156,29 +175,44 @@ class DynamicServer(SimpleServer):
     the server in the default way.
     '''
     def __init__(self):
-        SimpleServer.__init__(self)
-        # please read the implementation of the pcaspy DriverManager for more information regarding this port
+        super().__init__()
+        # please read the implementation of the pcaspy DriverManager 
+        # for more information regarding this port
         self.port = "default" 
         logging.debug('Server init complete.')
 
-    def pvExistTest(self, context, addr, fullname):
+    def pvExistTest(self, context, addr, fullname: str):
         '''
         This is overloaded to already return an "OK" if the prefix and the suffix is fine. Otherwise the orignal
         function will manage the response.
+        
+        :param context: network context 
+        :type context: obj
+        :param addr: address
+        :type context: obj
+        :param fullname: name of the PV including prefix 
+        :type fullname: str
+        :return: cas.pverExistsHere or cas.pverDoesNotExistHere
+        :rtype: obj
         '''
         try:
             suffix_correct = re.search(r'_[ifcIFC]\d+$', fullname)
             if fullname.startswith(prefix) and suffix_correct:
                 return cas.pverExistsHere
             else: # if the prefix is not fine, just let the SimpleServer function handle the response
-                return SimpleServer.pvExistTest(self, context, addr, fullname)
+                return super().pvExistTest(context, addr, fullname)
         except Exception as e:
             logging.error('ERROR: pvExistTest raised exception:\n'+str(e))
-            return SimpleServer.pvExistTest(self, context, addr, fullname)
+            return super().pvExistTest(context, addr, fullname)
 
-    def create_PVInfo(self, basename):
+    def create_PVInfo(self, basename: str):
         '''
         Create a PVInfo object based on the suffix of the fullname.
+        
+        :param basename: name of the PV 
+        :type basename: str
+        :return: PVInfo object, basically a dict of PV attributes
+        :rtype: PVInfo
         '''
 
         # default stats
@@ -211,11 +245,15 @@ class DynamicServer(SimpleServer):
         pvinfo.name = prefix + basename
         
         return pvinfo
-                    
 
-    def add_new_pv(self, fullname):
+    def add_new_pv(self, fullname: str):
         ''' 
-        Adds new SimplePV object to appropriate databases, making it accessable for the driver.
+        Creates and adds new SimplePV object to appropriate databases, making it accessable for the driver.
+        
+        :param fullname: name of the PV including prefix 
+        :type fullname: str
+        :return: None
+        :rtype: None
         '''
         # pv-name without the prefix
         basename = fullname[len(prefix):]
@@ -236,15 +274,25 @@ class DynamicServer(SimpleServer):
         data = driver.Data()
         data.value = pv.info.value
         relaydriver.pvDB[basename] = data
-        
-        return None
 
-    def pvAttach(self, context, fullname):
+        # update drivers pvlist
+        relaydriver.update_pvlist()
+        
+        return
+
+    def pvAttach(self, context, fullname: str):
         '''
         Manages the automatic creation and/or return of SimplePV objects from the database.
         
         The object 'driver' is actually from the pcaspy module, its imported as part of the global objects. 
         Please read the documentation/implementation of the pcaspy Driver/DriverManager to clarify.
+        
+        :param context: network context 
+        :type context: obj
+        :param fullname: name of the PV including prefix 
+        :type fullname: str
+        :return: None
+        :rtype: None
         '''
         logging.debug('handling pv request, fullname: '+str(fullname))
 
@@ -252,7 +300,7 @@ class DynamicServer(SimpleServer):
         if fullname[len(prefix):] in static_pvdb:
             logging.debug('static pv requested')
             ##if debug: print("static, return SimpleServer.pvAttach of", fullname, fullname[len(prefix):])
-            return SimpleServer.pvAttach(self, context, fullname)
+            return super().pvAttach(context, fullname)
 
         # check if name starts with relay servers prefix (check if it belongs here)
         elif fullname.startswith(prefix):
@@ -265,7 +313,7 @@ class DynamicServer(SimpleServer):
                 except Exception as e:
                     # something went wrong, let Mother class handle response
                     logging.error('ERROR: pvAttach raised exception:\n'+str(e))
-                    return SimpleServer.pvAttach(self, context, fullname)
+                    return super().pvAttach(context, fullname)
             
             logging.debug('return dynamic pv')
             return dynamic_pvdb[fullname]
@@ -273,7 +321,9 @@ class DynamicServer(SimpleServer):
         else:
             # not our pv, let Mother class handle response
             logging.debug('not our pv...')
-            return SimpleServer.pvAttach(self, context, fullname)
+            return super().pvAttach(context, fullname)
+
+
 
 if __name__ == '__main__':
     try:
@@ -283,6 +333,6 @@ if __name__ == '__main__':
         print('Running...\n')
         # process CA transactions
         while True:
-            server.process(0.001)
+            server.process(0.01)
     except:
         raise

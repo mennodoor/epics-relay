@@ -6,6 +6,7 @@ prefix = 'RELAY:'
 #prefix = '5trap:relay:'
 
 test_pvs = [
+        'test_y1',
         'test_i1',
         'test_f1',
         'test_c2',
