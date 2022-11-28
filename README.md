@@ -2,13 +2,13 @@
 
 ## About
 
-This is an [EPICS](https://epics-controls.org/) relay server written in python using the [pcaspy](https://github.com/paulscherrerinstitute/pcaspy) library. You can send data using an EPICS client, e.g. [pyepics](https://github.com/pyepics/pyepics), to a not yet existing process variable (PV) which fits the naming rules (prefix & dtype-suffix). A PV will then be created on the fly for other clients to read from. These PVs do not look any different than standard pcaspy PVs, so things like camonitor will work as normal, but the PV has to exist prior to a camonitor initialization.
+This is an [EPICS](https://epics-controls.org/) relay server written in python using the [pcaspy](https://github.com/paulscherrerinstitute/pcaspy) library. You can send data using an EPICS client, e.g. [pyepics](https://github.com/pyepics/pyepics), to a not yet existing process variable (PV) which fits the naming rules (prefix & dtype-suffix). A PV will then be created on the fly for other clients to read from. camonitor will work as normal, tough the PV has to exist prior to a camonitor call.
 
 There is no implementation for setting limits, units or other *higher order* PV-attributes ...yet. Only type (int, float, char) and count. And, because I needed it, a right appending buffer.
 
-## Why?
+### Why?
 
-EPICS based control systems don't use relays or brokers, its a network of servers presenting interfaces to devices or services and the underlying EPICS protocols allow clients to autoconnect to servers based on a process variable naming scheme and network broadcasts to find each other. So why would you need a relay? It's just a really easy way to publish variables from non-server scripts as PVs without building a server around them. That can be results of some online-analysis scripts, monitoring values from sensors or STDERR outputs from anywhere. Basically every device that doesn't need any input (doesn't need to be written to) can instead of building a server also use the relay. 
+EPICS based control systems don't need relays or brokers for communication, so why would you need a relay? It's a really easy way to publish variables from *anywhere* as PVs without building a server around them. Every script or service you run that doesn't need any input can push data via caput to the relay to make available instead of building a server around it.
 
 ## How to use:
 
